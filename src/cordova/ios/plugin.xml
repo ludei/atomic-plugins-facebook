@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cocoon-plugin-social-ios-facebook" version="1.0.0">
+    <name>CocoonFacebook</name>
+    <description>iOS Game Center API</description>
+    <license>MPL 2.0</license>
+    <keywords>cordova,Social,facebook,chievements,leaderboards,cocoon</keywords>
+    <repo>https://github.com/ludei/atomic-plugins-facebook</repo>
+    <platform name="ios">
+
+        <preference name="APP_ID" />
+        <preference name="APP_NAME" />
+
+        <header-file src="src/LDFacebookPlugin.h" />
+        <source-file src="src/LDFacebookPlugin.m" />
+        <header-file src="src/LDFacebookService.h" />
+        <source-file src="src/LDFacebookService.m" />
+
+        <framework src="libs/FBSDKCoreKit.framework" custom="true" />
+        <framework src="libs/FBSDKLoginKit.framework" custom="true" />
+        <framework src="libs/FBSDKShareKit.framework" custom="true" />
+        <framework src="libs/Bolts.framework" custom="true" />
+
+            <!-- System frameworks -->
+        <framework src="libsqlite3.dylib" />
+        <framework src="Social.framework" weak="true" />
+        <framework src="Accounts.framework" weak="true" />
+        <framework src="Security.framework" weak="true" />
+
+        <config-file target="config.xml" parent="/*">
+	    	<feature name="LDFacebookPlugin">
+	        	<param name="ios-package" value="LDFacebookPlugin" />
+	    	</feature>
+            <access origin="https://m.facebook.com" />
+            <access origin="https://graph.facebook.com" />
+            <access origin="https://api.facebook.com" />
+            <access origin="https://*.fbcdn.net" />
+            <access origin="https://*.akamaihd.net" />
+    	</config-file>
+
+        <config-file target="*-Info.plist" parent="FacebookAppID">
+            <string>$APP_ID</string>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="FacebookDisplayName">
+            <string>$APP_NAME</string>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+          <array>
+            <dict>
+              <key>CFBundleURLSchemes</key>
+              <array>
+                <string>fb$APP_ID</string>
+              </array>
+            </dict>
+          </array>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="NSAppTransportSecurity">
+            <dict>
+                <key>NSExceptionDomains</key>
+                <dict>
+                    <key>facebook.com</key>
+                    <dict>
+                        <key>NSIncludesSubdomains</key>
+                        <true/>                
+                        <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+                        <false/>
+                    </dict>
+                    <key>fbcdn.net</key>
+                    <dict>
+                        <key>NSIncludesSubdomains</key>
+                        <true/>
+                        <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+                        <false/>
+                    </dict>
+                    <key>akamaihd.net</key>
+                    <dict>
+                        <key>NSIncludesSubdomains</key>
+                        <true/>
+                        <key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+                        <false/>
+                    </dict>
+                </dict>
+            </dict>
+        </config-file>
+
+        <config-file target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+            <array>
+                    <string>fbapi</string>
+                    <string>fb-messenger-api</string>
+                    <string>fbauth2</string>
+                    <string>fbshareextension</string>
+            </array>
+        </config-file>
+
+        <js-module src="www/cocoon_facebook.js" name="Facebook">
+            <runs/>
+        </js-module>
+
+    </platform>
+    <dependency id="cocoon-plugin-social-common" />
+</plugin>
