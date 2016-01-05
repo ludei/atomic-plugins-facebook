@@ -51,8 +51,6 @@ NSDictionary * fbError(NSError* error)
 
 @end
 
-
-
 @interface LDFacebookService() <FBSDKWebDialogDelegate, FBSDKSharingDelegate>
 @end
 
@@ -91,6 +89,14 @@ NSDictionary * fbError(NSError* error)
 
 #pragma mark API
 
++(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    return [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                          openURL:url
+                                                sourceApplication:sourceApplication
+                                                       annotation:annotation
+            ];
+}
 
 -(void) initialize
 {

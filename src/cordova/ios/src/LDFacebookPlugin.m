@@ -1,12 +1,9 @@
 #import "LDFacebookPlugin.h"
+#import <Cordova/CDV.h>
 
 static NSDictionary * errorToDic(NSError * error)
 {
     return @{@"code":[NSNumber numberWithInteger:error.code], @"message":error.localizedDescription};
-}
-static NSDictionary * toError(NSString * message)
-{
-    return @{@"code":[NSNumber numberWithInteger:0], @"message":message};
 }
 
 static NSDictionary * sessionToDic(LDFacebookSession * session)
@@ -152,6 +149,103 @@ static NSDictionary * sessionToDic(LDFacebookSession * session)
         [result setKeepCallbackAsBool:YES];
     }
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+}
+
+@end
+
+
+
+#import <objc/runtime.h>
+
+#pragma mark SwizzledMethods
+
+static NSArray* ClassGetSubclasses(Class parentClass)
+{
+    int numClasses = objc_getClassList(nil, 0);
+    Class* classes = nil;
+    
+    classes = (Class*)malloc(sizeof(Class) * numClasses);
+    numClasses = objc_getClassList(classes, numClasses);
+    
+    NSMutableArray* result = [NSMutableArray array];
+    for (NSInteger i = 0; i < numClasses; i++) {
+        
+        Class superClass = classes[i];
+        do {
+            superClass = class_getSuperclass(superClass);
+        }
+        while(superClass && superClass != parentClass);
+        
+        if (superClass == nil) {
+            continue;
+        }
+        
+        [result addObject:classes[i]];
+    }
+    
+    free(classes);
+    
+    return result;
+}
+
+static BOOL MethodSwizzle(Class clazz, SEL originalSelector, SEL overrideSelector)
+{
+    Method originalMethod = class_getInstanceMethod(clazz, originalSelector);
+    Method overrideMethod = class_getInstanceMethod(clazz, overrideSelector);
+    
+    // try to add, if it does not exist, replace
+    if (class_addMethod(clazz, originalSelector, method_getImplementation(overrideMethod), method_getTypeEncoding(overrideMethod))) {
+        class_replaceMethod(clazz, overrideSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod));
+    }
+    // add failed, so we exchange
+    else {
+        method_exchangeImplementations(originalMethod, overrideMethod);
+        return YES;
+    }
+    
+    return NO;
+}
+
+static Class ClassToSwizzle() {
+    Class clazz = [CDVAppDelegate class];
+    
+    NSArray* subClazz = ClassGetSubclasses(clazz);
+    if ([subClazz count] > 0) {
+        clazz = [subClazz objectAtIndex:0];
+    }
+    
+    return clazz;
+}
+
+
+#pragma mark Global Variables
+
+static BOOL ldOpenURLExchanged = NO;
+
+
+#pragma mark CDVAppDelegate (SwizzledMethods)
+
+@implementation CDVAppDelegate (SwizzledMethods)
+
++ (void)load
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        Class clazz = ClassToSwizzle();
+        ldOpenURLExchanged = MethodSwizzle(clazz, @selector(application:openURL:sourceApplication:annotation:), @selector(swizzle_application:openURL:sourceApplication:annotation:));
+    });
+    
+}
+
+-(BOOL)swizzle_application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    BOOL handled = [LDFacebookService application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+    
+    // if method was exchanged through method_exchangeImplementations, we call ourselves (no, it's not a recursion)
+    if (!handled && ldOpenURLExchanged) {
+        return [self swizzle_application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+    }
+    return NO;
 }
 
 @end

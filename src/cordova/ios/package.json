@@ -1,23 +1,24 @@
 {
-  "name": "cocoon-plugin-social-ios-gamecenter",
-  "version": "1.0.3",
-  "description": "iOS Game Center API",
+  "name": "cocoon-plugin-social-ios-facebook",
+  "version": "1.0.0",
+  "description": "iOS Facebook API",
   "cordova": {
-    "id": "cocoon-plugin-social-ios-gamecenter",
+    "id": "cocoon-plugin-social-ios-facebook",
     "platforms": [
       "ios"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ludei/atomic-plugins-gamecenter"
+    "url": "https://github.com/ludei/atomic-plugins-facebook"
   },
   "keywords": [
     "cordova",
     "Social",
-    "GameCenter",
-    "game",
-    "center",
+    "facebook",
+    "share",
+    "friends",
+    "graph",
     "achievements",
     "leaderboards",
     "cocoon",
@@ -27,7 +28,7 @@
   "author": "ludei",
   "license": "MPL 2.0",
   "bugs": {
-    "url": "https://github.com/ludei/atomic-plugins-gamecenter/issues"
+    "url": "https://github.com/ludei/atomic-plugins-facebook/issues"
   },
-  "homepage": "https://github.com/ludei/atomic-plugins-gamecenter#readme"
+  "homepage": "https://github.com/ludei/atomic-plugins-facebook#readme"
 }

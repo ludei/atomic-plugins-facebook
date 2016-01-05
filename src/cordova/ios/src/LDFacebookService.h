@@ -30,6 +30,7 @@ typedef void (^LDFacebookCompletion)(NSDictionary * response, NSError * error);
 
 @property (nonatomic, weak) id<LDFacebookServiceDelegate> delegate;
 
++(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
 -(void) initialize;
 -(BOOL) isLoggedIn;
 -(void) loginWithReadPermissions:(NSArray *) permissions fromViewController:(UIViewController *) vc completion:(LDFacebookSessionHandler) completion;

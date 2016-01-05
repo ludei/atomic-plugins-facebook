@@ -52,7 +52,7 @@
                 if (this.native) {
                     Cocoon.exec(this.serviceName, "setListener", [], function(session, error) {
                         me._currentSession = toFBAPISession(session, error);
-                        if (session.state == 0) {
+                        if (session.state === 0) {
                             me.Event.notify("auth.login", me._currentSession);
                         }
                         me.Event.notify("auth.authResponseChange", me._currentSession);
@@ -460,7 +460,7 @@
                 }
                 var fbPictureSize = "small";
                 if (imageSize === Cocoon.Social.ImageSize.THUMB) {
-                    fbPictureSize = "square"
+                    fbPictureSize = "square";
                 }
                 else if (imageSize === Cocoon.Social.ImageSize.MEDIUM) {
                     fbPictureSize = "normal";
@@ -487,8 +487,8 @@
 
             //internal utility function
             preparePublishAction: function(callback) {
+                var me = this;
                 if (!this.currentPermissions) {
-                    var me = this;
                     this.fb.getPermissions(function(perms){
                         me.currentPermissions = perms;
                         if (perms) {
@@ -504,7 +504,6 @@
                 }
                 else{
                     this.currentPermissions = this.currentPermissions | {};
-                    var me = this;
                     this.fb.requestAdditionalPermissions("publish", "publish_actions", function(response) {
                         var perms = response && response.authResponse ? response.authResponse.permissions : [];
                         for (var i = 0; i < perms.length; ++i) {
@@ -544,7 +543,7 @@
                 var apiCall = ((params && params.userID) ? params.userID : "me") + "/scores";
                 this.fb.api(apiCall, "GET", {fields:"user, score"}, function(response) {
                     if (response.error) {
-                        callback(null, response.error)
+                        callback(null, response.error);
                     }
                     else if (response.data && response.data.length > 0) {
                         var data = fromFBScoreToCocoonScore(response.data[0]);
@@ -581,14 +580,14 @@
                                 if (callback)
                                     callback(response.error);
                             });
-                        }, params)
+                        }, params);
                     }
                     else {
                         if (callback)
                             callback({message: "No publish_actions permission granted"});
                     }
 
-                })
+                });
             },
 
             showLeaderboard : function(callback, params) {
@@ -638,7 +637,7 @@
                             var achievements = [];
                             if (response.data) {
                                 for (var i = 0; i < response.data.length; i++) {
-                                    achievements.push(fromFBAchievementToCocoonAchievement(response.data[i]))
+                                    achievements.push(fromFBAchievementToCocoonAchievement(response.data[i]));
                                 }
                             }
                             me.setCachedAchievements(achievements);
@@ -719,12 +718,12 @@
                             var someError = null;
                             var remaining = achievements.length;
                             for (var i = 0; i < achievements.length; ++i) {
-                                me.fb.api("me/achievements", "DELETE", {achievement:achievements[i].fbAchievementData.url}, function (response) {
+                                me.fb.api("me/achievements", "DELETE", {achievement:achievements[i].fbAchievementData.url}, function (response) { // jshint ignore:line
                                     if (response.error) {
                                         someError = response.error;
                                     }
                                     remaining--;
-                                    if (remaining == 0 && callback) {
+                                    if (remaining === 0 && callback) {
                                         callback(someError);
                                     }
                                 });
@@ -806,14 +805,14 @@
                     userID: response.user ? response.userID : null,
                     permissions: response.permissions,
                     user: response.user
-                }
+                };
             }
 
             return {
                 status: toFBAPIState(response.state),
                 authResponse: authResponse,
                 error: error
-            }
+            };
 
         }
 
@@ -828,7 +827,7 @@
                 name: message.linkText,
                 caption: message.linkCaption,
                 picture: message.mediaURL
-            }
+            };
         }
 
         function fromFBScoreToCocoonScore(fbResponse, requestScoreParams) {
