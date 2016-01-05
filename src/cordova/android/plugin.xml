@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cocoon-plugin-social-android-facebook" version="1.0.0">
+    <name>CocoonFacebook</name>
+    <description>Android Fabebook API</description>
+    <license>MPL 2.0</license>
+    <keywords>cordova,Social,facebook,achievements,leaderboards,cocoon</keywords>
+    <repo>https://github.com/ludei/atomic-plugins-facebook</repo>
+    <platform name="android">
+
+        <preference name="APP_ID" />
+        <preference name="APP_NAME" />
+
+        <source-file src="src/FacebookService.java" target-dir="src/com/ludei/facebook" />
+        <source-file src="src/FacebookPlugin.java" target-dir="src/com/ludei/facebook/cordova" />
+
+        <framework src="com.facebook.android:facebook-android-sdk:4.8.1" />
+
+        <config-file target="res/xml/config.xml" parent="/*">
+	    	<feature name="LDFacebookPlugin">
+                <param name="android-package" value="com.ludei.facebook.cordova.FacebookPlugin"/>
+                <param name="onload" value="true" />
+	    	</feature>
+            <access origin="https://m.facebook.com" />
+            <access origin="https://graph.facebook.com" />
+            <access origin="https://api.facebook.com" />
+            <access origin="https://*.fbcdn.net" />
+            <access origin="https://*.akamaihd.net" />
+    	</config-file>
+
+        <source-file src="src/facebook.xml" target-dir="res/values" />
+        <config-file target="res/values/facebook.xml" parent="/*">
+            <string name="fb_app_id">$APP_ID</string>
+            <string name="fb_app_name">$APP_NAME</string>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="application">
+            <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id"/>
+            <activity android:label="@string/fb_app_name" android:name="com.facebook.FacebookActivity"
+          android:configChanges=
+                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+          android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+          <provider android:authorities="com.facebook.app.FacebookContentProvider$APP_ID"
+          android:name="com.facebook.FacebookContentProvider"
+          android:exported="true" />
+        </config-file>
+
+        <js-module src="www/cocoon_facebook.js" name="Facebook">
+            <runs/>
+        </js-module>
+
+    </platform>
+    <dependency id="cocoon-plugin-social-common" />
+</plugin>
