@@ -77,9 +77,7 @@ public class FacebookService  {
 
     public void initialize()
     {
-        Log.e("Mortimer", "YEEEEEEPALE NAZARI");
         if (this.isLoggedIn()) {
-            Log.e("Mortimer", "BAINA NOR DA ORDU HONETAN?????");
             this.processSessionChange(AccessToken.getCurrentAccessToken(), null);
         }
 
