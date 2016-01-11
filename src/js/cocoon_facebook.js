@@ -6,9 +6,48 @@
     var Cocoon = window.Cocoon;
 
     /**
-     * Cocoon Social Interface for the Game Center Extension.
-     * @namespace Cocoon.Social.GameCenter
-     */
+    * @fileOverview
+    <h2>About Atomic Plugins</h2>
+    <p>Atomic Plugins provide an elegant and minimalist API and are designed with portability in mind from the beginning. Framework dependencies are avoided by design so the plugins can run on any platform and can be integrated with any app framework or game engine.
+    <br/><p>You can contribute and help to create more awesome plugins. </p>
+    <h2>Atomic Plugins for Facebook</h2>
+    <p>This repo contains Facebook APIs designed using the Atomic Plugins paradigm. Connect your app to Facebook and take advantage of all the features provided. The API is already available in many languagues and we have the plan to add more in the future.</p>
+    <h3>Setup your project</h3>
+    <p>Releases are deployed to NPM. 
+    You only have to install the desired plugins using Cordova CLI or the Cocoon Cloud Service.</p>
+    <ul>
+    <code>
+    cordova plugin add cocoon-plugin-social-android-facebook;<br/>
+    </code>
+    </ul>
+    <p>The following JavaScript files will be included in your html project by default during installation:</p>
+    <ul>
+    <li><a href="https://github.com/ludei/atomic-plugins-facebook/blob/master/src/js/cocoon_facebook.js">cocoon_facebook.js</a></li>
+    </ul>
+    <h3>Documentation</h3>
+    <p>In this section you will find all the documentation you need for using this plugin in your Cordova project. 
+    Select the specific namespace below to open the relevant documentation section:</p>
+    <ul>
+    <li><a href="http://ludei.github.io/cocoon-common/dist/doc/js/Cocoon.html">Cocoon</a></li>
+    <li><a href="Cocoon.Social.Facebook.html">Facebook</a></li>
+    </ul>
+    <h3>API Reference</h3>
+    <p>For a complete project that tests all the features provided in the API run the following command:</p>
+    <ul><code>gulp create-cordova</code></ul>
+    <br/><p>We hope you find everything you need to get going here, but if you stumble on any problems with the docs or the plugins, 
+    just drop us a line at our forum and we will do our best to help you out.</p>
+    <h3>Tools</h3>
+    <a href="http://forums.cocoon.io"><img src="img/cocoon-tools-1.png" /></a>
+    <a href="https://docs.cocoon.io"><img src="img/cocoon-tools-2.png" /></a>
+    <a href="http://cocoon.io/"><img src="img/cocoon-tools-3.png" /></a>
+    * @version 1.0
+    */
+
+   /**
+    * Cocoon.Social.Facebook class provides an easy to use Ads API that can be used with Facebook.
+    * @namespace Cocoon.Social.Facebook
+    */
+
     Cocoon.define("Cocoon.Social", function(extension) {
 
         extension.FacebookExtension = function() {
@@ -85,7 +124,7 @@
              * Returns a Social Interface for the Facebook Extension.
              * You can use the Facebook extension in two ways, with 1:1 official API equivalent or with the Cocoon API abstraction.
              * @function getSocialInterface
-             * @memberOf Cocoon.Social.GameCenter
+             * @memberOf Cocoon.Social.Facebook
              * @see Cocoon.Social.Interface
              * @returns {Cocoon.Social.Interface}
              */

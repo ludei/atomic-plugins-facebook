@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="cocoon-plugin-social-ios-facebook" version="1.0.0">
-    <name>CocoonFacebook</name>
-    <description>iOS Game Center API</description>
+        id="cocoon-plugin-social-ios-facebook" version="1.0.1">
+    <name>Cocoon Facebook Plugin iOS</name>
+    <description>Cocoon Facebook API</description>
     <license>MPL 2.0</license>
     <keywords>cordova,Social,facebook,chievements,leaderboards,cocoon</keywords>
     <repo>https://github.com/ludei/atomic-plugins-facebook</repo>
