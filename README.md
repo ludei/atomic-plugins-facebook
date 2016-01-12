@@ -21,7 +21,7 @@ Atomic Plugins provide an elegant and minimalist API and are designed with porta
 
 ###API Reference
 
-See [API Documentation](http://ludei.github.io/cocoon-common/dist/doc/js/Cocoon.Social.Facebook.html)
+See [API Documentation](http://ludei.github.io/atomic-plugins-docs/dist/doc/js/Cocoon.Social.Facebook.html)
 
 ###Introduction 
 
