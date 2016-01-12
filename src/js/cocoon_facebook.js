@@ -17,19 +17,14 @@
     You only have to install the desired plugins using Cordova CLI and <a href="https://cocoon.io"/>Cocoon Cloud service</a>.</p>
     <ul>
     <code>
-    cordova plugin add cocoon-plugin-social-android-facebook;<br/>
+    cordova plugin add cocoon-plugin-social-android-facebook<br/>
     </code>
-    </ul>
-    <p>The following JavaScript files will be included in your html project by default during installation:</p>
-    <ul>
-    <li><a href="https://github.com/ludei/atomic-plugins-facebook/blob/master/src/js/cocoon_facebook.js">cocoon_facebook.js</a></li>
     </ul>
     <h3>Documentation</h3>
     <p>In this section you will find all the documentation you need for using this plugin in your Cordova project. 
     Select the specific namespace below to open the relevant documentation section:</p>
     <ul>
-    <li><a href="http://ludei.github.io/cocoon-common/dist/doc/js/Cocoon.html">Cocoon</a></li>
-    <li><a href="Cocoon.Social.Facebook.html">Facebook</a></li>
+    <li><a href="http://ludei.github.io/atomic-plugins-docs/dist/doc/js/Cocoon.Social.Facebook.html">Facebook</a></li>
     </ul>
     * @version 1.0
     */
