@@ -31,8 +31,8 @@ Cocoon.Social.Facebook class provides an easy to use social interface for Facebo
 
 Releases are deployed to Cordova Plugin Registry. You only have to install the desired plugins using Cordova CLI, CocoonJS CLI or Ludei's Cocoon.io Cloud Server.
 
-	cordova plugin add com.ludei.social.ios.facebook;
-	cordova plugin add com.ludei.social.android.facebook;
+	cordova plugin add cocoon-plugin-social-ios-facebook --variable APP_ID=xxxxxxxx --variable APP_NAME=AppName
+	cordova plugin add cocoon-plugin-social-android-facebook --variable APP_ID=xxxxxxxx --variable APP_NAME=AppName
 
 The following JavaScript files are included automatically:
 
