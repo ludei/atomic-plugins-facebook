@@ -41,15 +41,22 @@ The following JavaScript files are included automatically:
 
 ###Example
 
+	//How to initialize for iOS, Android & Browser
 	var social;
 		
-	social = Cocoon.Social.Facebook.init({
+	Cocoon.Social.Facebook.init({
 	    appId: "XXXXXXXXXXXXXXXXXXXXX",
-	    channelUrl: "//connect.facebook.net/en_US/all.js"
-	});
-
-	social = Cocoon.Social.Facebook.getSocialInterface();
-
+            xfbml: true,
+            version: 'v2.5'
+	}, fbInitialized);
+	
+	function fbInitialized() {
+	    social = Cocoon.Social.Facebook.getSocialInterface(); //high level abstraction API
+	}
+	
+	
+	//API examples using high level abstraction API got by calling getSocialInterface()
+	//You can also use FB oficial API (api, ui, Event methods) using the Cocoon.Social.Facebook object.
 	var loggedIn = social.isLoggedIn();
 
 	function loginSocial() {
@@ -70,7 +77,7 @@ The following JavaScript files are included automatically:
 
 	loginSocial();
 
-    social.submitAchievement(achievementID, function(error){
+    	social.submitAchievement(achievementID, function(error){
     	if (error)
         	console.error("submitAchievement error: " + error.message);
 	});
@@ -91,6 +98,7 @@ The following JavaScript files are included automatically:
 	});
 
     social.logout();
+
 
 #License
 
