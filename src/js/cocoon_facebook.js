@@ -26,6 +26,8 @@
     <ul>
     <li><a href="http://ludei.github.io/atomic-plugins-docs/dist/doc/js/Cocoon.Social.Facebook.html">Facebook</a></li>
     </ul>
+    <h3>Full example</h3>
+    See a full example here: <a href="https://github.com/CocoonIO/cocoon-sample-facebook"/>Facebook demo</a>
     * @version 1.0
     */
 
