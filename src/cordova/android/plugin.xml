@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="cocoon-plugin-social-android-facebook" version="1.0.5">
+        id="cocoon-plugin-social-android-facebook" version="1.0.6">
     <name>Cocoon Facebook Plugin Android</name>
     <description>Cocoon Facebook Plugin Android</description>
     <license>MPL 2.0</license>
@@ -17,6 +17,7 @@
         <framework src="com.facebook.android:facebook-android-sdk:4.8.1" />
 
         <config-file target="res/xml/config.xml" parent="/*">
+            <preference name="android-minSdkVersion" value="15" />
 	    	<feature name="LDFacebookPlugin">
                 <param name="android-package" value="com.ludei.facebook.cordova.FacebookPlugin"/>
                 <param name="onload" value="true" />
