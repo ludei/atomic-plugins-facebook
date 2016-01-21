@@ -212,7 +212,7 @@
             getLoginStatus: function(callback, force) {
                 if (this.native) {
 
-                    Cocoon.exec(this.serviceName, "getLoginStatus", [options], function(response) {
+                    Cocoon.exec(this.serviceName, "getLoginStatus", function(response) {
                         if (callback) {
                             callback(toFBAPISession(response));
                         }
@@ -745,7 +745,8 @@
                             var someError = null;
                             var remaining = achievements.length;
                             for (var i = 0; i < achievements.length; ++i) {
-                                me.fb.api("me/achievements", "DELETE", {achievement:achievements[i].fbAchievementData.url}, function (response) { // jshint ignore:line
+                                /*jshint loopfunc: true */
+                                me.fb.api("me/achievements", "DELETE", {achievement:achievements[i].fbAchievementData.url}, function (response) {
                                     if (response.error) {
                                         someError = response.error;
                                     }
