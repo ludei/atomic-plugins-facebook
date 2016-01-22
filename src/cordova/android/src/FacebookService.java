@@ -102,6 +102,10 @@ public class FacebookService  {
         this.requestAdditionalPermissions("read", permissions, fromActivity, callback);
     }
 
+    public void getLoginStatus(boolean force, SessionCallback callback) {
+        callback.onComplete(new Session(AccessToken.getCurrentAccessToken()), null);
+    }
+
     public void logout() {
         LoginManager.getInstance().logOut();
     }
@@ -138,7 +142,6 @@ public class FacebookService  {
         }
 
     }
-
 
     public void api(String graph, String httpMethod, JSONObject params, final CompletionCallback callback)
     {

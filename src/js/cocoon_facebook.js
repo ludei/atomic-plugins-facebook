@@ -209,17 +209,18 @@
              * @param {function} callback The callback function.
              * @param {boolean} force Force reloading the login status (default false).
              */
-            getLoginStatus: function(callback, force) {
+            getLoginStatus: function(cb, force) {
                 if (this.native) {
-
-                    Cocoon.exec(this.serviceName, "getLoginStatus", function(response) {
+                    var callback = arguments.length > 0 ? arguments[0] : function(){};
+                    var frc = arguments.length > 1 ? arguments[1]: false;
+                    Cocoon.exec(this.serviceName, "getLoginStatus", [frc], function(session, error){
                         if (callback) {
-                            callback(toFBAPISession(response));
+                            callback(toFBAPISession(session, error));
                         }
                     });
                 }
                 else {
-                    FB.getLoginStatus(callback, force);
+                    FB.getLoginStatus(cb, force);
                 }
 
             },
@@ -436,10 +437,10 @@
             },
             login : function(callback, options) {
                 var me = this;
-                this.fb.login(function(response){
+                this.fb.login(options, function(response, error){
                     if (callback)
                         callback(me.isLoggedIn(), response.error);
-                }, options);
+                });
             },
             logout: function(callback) {
                 this.fb.logout(function(response){

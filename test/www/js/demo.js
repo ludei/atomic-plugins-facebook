@@ -4,7 +4,7 @@
 
     var backgroundTexture, button1Texture, button2Texture, backTexture;
     var fbService, socialAPI;
-    var btnLogin, btnLogout, btnShare;
+    var btnLogin, btnLogout, btnShare, btnLoginStatus;
     var container;
 
     function initProviders() {
@@ -13,12 +13,11 @@
             fbService = Cocoon.Social.Facebook; //Pure Facebook API
             fbService.init();
             socialAPI = fbService.getSocialInterface(); //high level abstraction API
-
             socialAPI.on("loginStatusChanged", function(loggedIn){
-                if (btnLogout) {
+                if (btnLogout) 
                     btnLogout.visible = loggedIn;
+                if (btnLogin)
                     btnLogin.visible = !loggedIn;
-                }
             });
         }
         else {
@@ -38,6 +37,25 @@
             });
         });
 
+        btnLoginStatus = createButton("Login Status", function() {
+            fbService.getLoginStatus(function(response) {
+                alert("Login status: " + JSON.stringify(response));
+                if (response.status === 'connected') {
+                    // the user is logged in and has authenticated your
+                    // app, and response.authResponse supplies
+                    // the user's ID, a valid access token, a signed
+                    // request, and the time the access token 
+                    // and signed request each expire
+
+                  } else if (response.status === 'not_authorized') {
+                    // the user is logged in to Facebook, 
+                    // but has not authenticated your app
+
+                  } else {
+
+                  }
+            });
+        });
 
         btnLogout = createButton("Log Out", function(){
             socialAPI.logout(function(error){
@@ -127,7 +145,8 @@
         container.addChild(btnRequestScore);
         btnSubmitScore.position.set(0, nextY());
         container.addChild(btnSubmitScore);
-
+        btnLoginStatus.position.set(0, nextY());
+        container.addChild(btnLoginStatus);
     }
 
     function initDemo(){

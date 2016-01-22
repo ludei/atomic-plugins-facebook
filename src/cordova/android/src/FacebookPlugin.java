@@ -64,6 +64,7 @@ public class FacebookPlugin extends CordovaPlugin implements FacebookService.Ses
         ctx.sendPluginResult(new PluginResult(PluginResult.Status.OK, (String) null));
     }
 
+    @SuppressWarnings("unused")
     public void login(CordovaArgs args, final CallbackContext ctx) throws JSONException {
         JSONObject params = args.optJSONObject(0);
         ArrayList<String> permissions = null;
@@ -82,11 +83,27 @@ public class FacebookPlugin extends CordovaPlugin implements FacebookService.Ses
         });
     }
 
+    @SuppressWarnings("unused")
+    public void getLoginStatus(CordovaArgs args, final CallbackContext ctx) throws JSONException {
+        cordova.setActivityResultCallback(this);
+        _service.getLoginStatus(args.optBoolean(0), new FacebookService.SessionCallback() {
+            @Override
+            public void onComplete(FacebookService.Session session, FacebookService.Error error) {
+                notifyCallback(ctx, session != null ? session.toJSON() : null, error, false);
+            }
+        });
+    }
+
+    @SuppressWarnings("unused")
     public void logout(CordovaArgs args, final CallbackContext ctx) throws JSONException {
+        if (_service.isLoggedIn())
+            notifyCallback(_sessionListener, null, null, true);
+
         _service.logout();
         ctx.success();
     }
 
+    @SuppressWarnings("unused")
     public void requestAdditionalPermissions(CordovaArgs args, final CallbackContext ctx) throws JSONException {
         String type = args.optString(0);
         if (type == null) {
@@ -108,7 +125,7 @@ public class FacebookPlugin extends CordovaPlugin implements FacebookService.Ses
         });
     }
 
-
+    @SuppressWarnings("unused")
     public void api(CordovaArgs args, final CallbackContext ctx) throws JSONException {
         String graph = args.getString(0);
         String method = args.optString(1);
@@ -121,6 +138,7 @@ public class FacebookPlugin extends CordovaPlugin implements FacebookService.Ses
         });
     }
 
+    @SuppressWarnings("unused")
     public void ui(CordovaArgs args, final CallbackContext ctx) throws JSONException {
         String method = args.getString(0);
         JSONObject params = args.optJSONObject(1);
@@ -133,6 +151,7 @@ public class FacebookPlugin extends CordovaPlugin implements FacebookService.Ses
         });
     }
 
+    @SuppressWarnings("unused")
     public void showShareDialog(CordovaArgs args, final CallbackContext ctx) throws JSONException {
         JSONObject params = args.getJSONObject(0);
         cordova.setActivityResultCallback(this);
@@ -144,6 +163,7 @@ public class FacebookPlugin extends CordovaPlugin implements FacebookService.Ses
         });
     }
 
+    @SuppressWarnings("unused")
     public void uploadPhoto(CordovaArgs args, final CallbackContext ctx) throws JSONException {
         String file = args.getString(0);
         JSONObject params = args.getJSONObject(1);
