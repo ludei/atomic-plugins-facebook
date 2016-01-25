@@ -80,8 +80,10 @@ static NSDictionary * sessionToDic(LDFacebookSession * session)
 
 -(void) logout:(CDVInvokedUrlCommand *) command
 {
+    if ([_service isLoggedIn])
+        [self notify:command response:nil error:nil keep:NO];
+    
     [_service logout];
-    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:command.callbackId];
 }
 
 -(void) requestAdditionalPermissions:(CDVInvokedUrlCommand *) command
