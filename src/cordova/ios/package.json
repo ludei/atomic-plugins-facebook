@@ -1,6 +1,6 @@
 {
   "name": "cocoon-plugin-social-ios-facebook",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "iOS Facebook API",
   "cordova": {
     "id": "cocoon-plugin-social-ios-facebook",

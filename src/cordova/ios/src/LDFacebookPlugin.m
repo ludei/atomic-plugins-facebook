@@ -69,6 +69,15 @@ static NSDictionary * sessionToDic(LDFacebookSession * session)
     }];
 }
 
+-(void) getLoginStatus:(CDVInvokedUrlCommand*) command
+{
+    NSNumber* force = [command argumentAtIndex:0 withDefault:0 andClass:[NSNumber class]];
+   
+    [_service getLoginStatus:[force boolValue] completion:^(LDFacebookSession *session, NSError *error) {
+        [self notify:command response:sessionToDic(session) error:error keep:NO];
+    }];
+}
+
 -(void) logout:(CDVInvokedUrlCommand *) command
 {
     [_service logout];

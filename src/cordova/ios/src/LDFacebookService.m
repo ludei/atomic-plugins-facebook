@@ -138,6 +138,13 @@ NSDictionary * fbError(NSError* error)
     [self processSessionChange:[FBSDKAccessToken currentAccessToken] error:nil handler:nil];
 }
 
+-(void) getLoginStatus:(BOOL) force completion:(LDFacebookSessionHandler) completion {
+    FBSDKAccessToken * session = [FBSDKAccessToken currentAccessToken];
+    if (completion) {
+        completion(fromToken(session), nil);
+    }
+}
+
 -(void) requestAdditionalPermissions:(NSString *) permissionType permissions:(NSArray *) permissions fromViewController:(UIViewController*) vc  completion:(LDFacebookSessionHandler) completion
 {
     FBSDKAccessToken * session = [FBSDKAccessToken currentAccessToken];

@@ -35,6 +35,7 @@ typedef void (^LDFacebookCompletion)(NSDictionary * response, NSError * error);
 -(BOOL) isLoggedIn;
 -(void) loginWithReadPermissions:(NSArray *) permissions fromViewController:(UIViewController *) vc completion:(LDFacebookSessionHandler) completion;
 -(void) logout;
+-(void) getLoginStatus:(BOOL) force completion:(LDFacebookSessionHandler) completion;
 -(void) requestAdditionalPermissions:(NSString *) permissionType permissions:(NSArray *) permissions fromViewController:(UIViewController *) vc completion:(LDFacebookSessionHandler) completion;
 -(void) api:(NSString *) openGraph method:(NSString*) httpMethod params:(NSDictionary*) params completion:(LDFacebookCompletion) completion;
 -(void) ui:(NSString*) methodName params:(NSDictionary*) params completion:(LDFacebookCompletion) completion;
