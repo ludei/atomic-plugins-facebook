@@ -124,7 +124,7 @@ static NSDictionary * sessionToDic(LDFacebookSession * session)
 -(void) showShareDialog:(CDVInvokedUrlCommand *) command
 {
     NSDictionary * params = [command argumentAtIndex:0 withDefault:@{} andClass:[NSDictionary class]];
-    [_service showShareDialog:params completion:^(NSDictionary *response, NSError *error) {
+    [_service showShareDialog:params fromViewController:self.viewController completion:^(NSDictionary *response, NSError *error) {
         [self notify:command response:response error:error keep:NO];
     }];
 }

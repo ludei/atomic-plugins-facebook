@@ -225,8 +225,10 @@ NSDictionary * fbError(NSError* error)
     [FBSDKWebDialog showWithName:methodName parameters:params delegate:self];
 }
 
--(void) showShareDialog:(NSDictionary*) params completion:(LDFacebookCompletion)completion
+-(void) showShareDialog:(NSDictionary*) params fromViewController:(UIViewController*) vc completion:(LDFacebookCompletion)completion
 {
+    _shareCompletion = completion;
+    
     FBSDKShareLinkContent *content = [FBSDKShareLinkContent new];
     if ([params objectForKey:@"link"]) {
         content.contentURL = [NSURL URLWithString:[params objectForKey:@"link"]];
@@ -238,11 +240,9 @@ NSDictionary * fbError(NSError* error)
         content.imageURL = [NSURL URLWithString:[params objectForKey:@"picture"]];
     }
 
-    FBSDKShareDialog * dialog = [[FBSDKShareDialog alloc] init];
-    [dialog setShareContent:content];
-    [dialog setMode:FBSDKShareDialogModeNative];
-    [dialog setDelegate:self];
-    [dialog show];
+    [FBSDKShareDialog showFromViewController:vc
+                                 withContent:content
+                                    delegate:self];
 }
 
 -(void) uploadPhoto:(NSString*) filePath completion:(LDFacebookCompletion) completion
