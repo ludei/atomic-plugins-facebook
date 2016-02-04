@@ -52,6 +52,8 @@ static NSDictionary * sessionToDic(LDFacebookSession * session)
 {
     _service.delegate = self;
     [_service initialize];
+    
+    [self notify:command response:sessionToDic(nil) error:nil keep:NO];
 }
 
 -(void) login:(CDVInvokedUrlCommand*) command
