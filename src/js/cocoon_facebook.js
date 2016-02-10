@@ -831,7 +831,7 @@
                 authResponse = {
                     accessToken: response.accessToken,
                     expirationDate: response.expirationDate,
-                    userID: response.user ? response.userID : null,
+                    userID: response.user ? response.user.id : null,
                     permissions: response.permissions,
                     user: response.user
                 };

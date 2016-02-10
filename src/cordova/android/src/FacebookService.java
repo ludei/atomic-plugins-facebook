@@ -187,35 +187,42 @@ public class FacebookService  {
         request.executeAsync();
     }
 
-    public void ui(String method, JSONObject params, Activity fromActivity, final CompletionCallback callback) {
+    public void ui(final String method, final JSONObject params, final Activity fromActivity, final CompletionCallback callback) {
 
-        try {
-            WebDialog dialog = new WebDialog(fromActivity, method, jsonToBundle(params), FacebookSdk.getWebDialogTheme(), new WebDialog.OnCompleteListener() {
-                @Override
-                public void onComplete(Bundle values, FacebookException fbError) {
-                    if (callback == null) {
-                        return;
-                    }
+        fromActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final WebDialog dialog = new WebDialog(fromActivity, method, jsonToBundle(params), FacebookSdk.getWebDialogTheme(), new WebDialog.OnCompleteListener() {
+                        @Override
+                        public void onComplete(Bundle values, FacebookException fbError) {
+                            if (callback == null) {
+                                return;
+                            }
 
-                    JSONObject result = bundleToJson(values);
-                    Error error = null;
-                    if (fbError != null) {
-                        error = new Error(fbError.getLocalizedMessage(), 0);
-                    }
-                    callback.onComplete(result, error);
+                            JSONObject result = bundleToJson(values);
+                            Error error = null;
+                            if (fbError != null) {
+                                error = new Error(fbError.getLocalizedMessage(), 0);
+                            }
+                            callback.onComplete(result, error);
 
+                        }
+                    });
+
+                    dialog.show();
                 }
-            });
-            dialog.show();
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
     }
 
     public void showShareDialog(JSONObject params, Activity fromActivity, final CompletionCallback callback) {
 
-        ShareLinkContent.Builder builder = new ShareLinkContent.Builder();
+        final ShareLinkContent.Builder builder = new ShareLinkContent.Builder();
         builder.setContentDescription(params.optString("description",""));
         builder.setContentTitle(params.optString("name",""));
         if (params.has("link")) {
@@ -225,7 +232,7 @@ public class FacebookService  {
             builder.setImageUrl(Uri.parse(params.optString("image","")));
         }
 
-        ShareDialog dialog = new ShareDialog(fromActivity);
+        final ShareDialog dialog = new ShareDialog(fromActivity);
         if (callback != null) {
             dialog.registerCallback(_fbCallbackManager, new FacebookCallback<Sharer.Result>() {
                 @Override
@@ -251,7 +258,12 @@ public class FacebookService  {
             });
         }
 
-        dialog.show(builder.build());
+        fromActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dialog.show(builder.build());
+            }
+        });
     }
 
     public void uploadPhoto(String filePath, JSONObject params, final CompletionCallback callback) {
