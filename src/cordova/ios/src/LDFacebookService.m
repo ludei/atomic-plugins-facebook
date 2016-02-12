@@ -39,7 +39,7 @@ NSDictionary * fbError(NSError* error)
     if (error) {
         return @{ @"error": @{
                             @"code": [NSNumber numberWithInteger:error.code],
-                            @"message": error.localizedDescription ?: @""
+                            @"message": [error.userInfo objectForKey:@"com.facebook.sdk:FBSDKErrorDeveloperMessageKey"] ?: @""
                           }
                 };
     }
@@ -51,13 +51,15 @@ NSDictionary * fbError(NSError* error)
 
 @end
 
-@interface LDFacebookService() <FBSDKWebDialogDelegate, FBSDKSharingDelegate>
+@interface LDFacebookService() <FBSDKWebDialogDelegate, FBSDKSharingDelegate, FBSDKGameRequestDialogDelegate>
 @end
+
 
 @implementation LDFacebookService
 {
     NSDictionary * _cachedUser;
     void (^_profileNotificationTask)();
+    LDFacebookCompletion _gameRequestDialogCompletion;
     LDFacebookCompletion _webDialogCompletion;
     LDFacebookCompletion _shareCompletion;
     
@@ -220,9 +222,58 @@ NSDictionary * fbError(NSError* error)
 }
 
 -(void) ui:(NSString*) methodName params:(NSDictionary*) params completion:(LDFacebookCompletion) completion
-{
-    _webDialogCompletion = completion;
-    [FBSDKWebDialog showWithName:methodName parameters:params delegate:self];
+{    
+    if ([methodName isEqualToString:@"apprequests"]) {
+        _gameRequestDialogCompletion = completion;
+        
+        FBSDKGameRequestContent *content = [[FBSDKGameRequestContent alloc] init];
+        NSString *actionType = params[@"actionType"];
+        if (!actionType) {
+            NSError * error = [NSError errorWithDomain:@"Facebook" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Cannot show dialog"}];
+            completion(fbError(error), error);
+            return;
+        }
+        if ([[actionType lowercaseString] isEqualToString:@"askfor"]) {
+            content.actionType = FBSDKGameRequestActionTypeAskFor;
+        } else if ([[actionType lowercaseString] isEqualToString:@"send"]) {
+            content.actionType = FBSDKGameRequestActionTypeSend;
+        } else if ([[actionType lowercaseString] isEqualToString:@"turn"]) {
+            content.actionType = FBSDKGameRequestActionTypeTurn;
+        }
+        
+        NSString *filters = params[@"filters"];
+        if (!filters) {
+            content.filters = FBSDKGameRequestFilterNone;
+        } else if ([filters isEqualToString:@"app_users"]) {
+            content.filters = FBSDKGameRequestFilterAppNonUsers;
+        } else if ([filters isEqualToString:@"app_non_users"]) {
+            content.filters = FBSDKGameRequestFilterAppNonUsers;
+        }
+        
+        NSError *error;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params[@"data"]
+                                                           options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                             error:&error];
+        
+        if (! jsonData) {
+            completion(fbError(error), error);
+            return;
+        }
+        content.data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        content.message = params[@"message"];
+        content.objectID = params[@"objectId"];
+        if ([params[@"to"] isKindOfClass:[NSArray class]])
+             content.recipients = params[@"to"];
+        else if ([params[@"to"] isKindOfClass:[NSString class]])
+             content.recipients = @[ params[@"to"] ];
+        content.title = params[@"title"];
+        
+        [FBSDKGameRequestDialog showWithContent:content delegate:self];
+    
+    } else {
+        _webDialogCompletion = completion;
+        [FBSDKWebDialog showWithName:methodName parameters:params delegate:self];
+    }
 }
 
 -(void) showShareDialog:(NSDictionary*) params fromViewController:(UIViewController*) vc completion:(LDFacebookCompletion)completion
@@ -279,6 +330,30 @@ NSDictionary * fbError(NSError* error)
 
 #pragma mark Internal
 
+
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didCompleteWithResults:(NSDictionary *)results
+{
+    if (_gameRequestDialogCompletion) {
+        _gameRequestDialogCompletion(results, nil);
+        _gameRequestDialogCompletion = nil;
+    }
+}
+
+- (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didFailWithError:(NSError *)error
+{
+    if (_gameRequestDialogCompletion) {
+        _gameRequestDialogCompletion(fbError(error), error);
+        _gameRequestDialogCompletion = nil;
+    }
+}
+
+- (void)gameRequestDialogDidCancel:(FBSDKGameRequestDialog *)gameRequestDialog
+{
+    if (_gameRequestDialogCompletion) {
+        _gameRequestDialogCompletion(nil, nil);
+        _gameRequestDialogCompletion = nil;
+    }
+}
 
 - (void)webDialog:(FBSDKWebDialog *)webDialog didCompleteWithResults:(NSDictionary *)results
 {

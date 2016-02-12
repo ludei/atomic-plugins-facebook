@@ -140,8 +140,8 @@ public class FacebookPlugin extends CordovaPlugin implements FacebookService.Ses
 
     @SuppressWarnings("unused")
     public void ui(CordovaArgs args, final CallbackContext ctx) throws JSONException {
-        String method = args.getString(0);
-        JSONObject params = args.optJSONObject(1);
+        JSONObject params = args.getJSONObject(0);
+        String method = params.getString("method");
         cordova.setActivityResultCallback(this);
         _service.ui(method, params, cordova.getActivity(), new FacebookService.CompletionCallback() {
             @Override

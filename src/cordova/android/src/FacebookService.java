@@ -13,15 +13,19 @@ import com.facebook.*;
 import com.facebook.internal.WebDialog;
 import com.facebook.login.*;
 import com.facebook.share.Sharer;
+import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.*;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -187,37 +191,119 @@ public class FacebookService  {
         request.executeAsync();
     }
 
-    public void ui(final String method, final JSONObject params, final Activity fromActivity, final CompletionCallback callback) {
+    public void ui(final String method, final JSONObject params, final Activity fromActivity, final CompletionCallback callback) throws JSONException {
+        if (method == null) {
+            callback.onComplete(null, new Error("No method provided", 0));
+        }
 
-        fromActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final WebDialog dialog = new WebDialog(fromActivity, method, jsonToBundle(params), FacebookSdk.getWebDialogTheme(), new WebDialog.OnCompleteListener() {
-                        @Override
-                        public void onComplete(Bundle values, FacebookException fbError) {
-                            if (callback == null) {
-                                return;
-                            }
+        if (method.equalsIgnoreCase("apprequests")) {
+            final GameRequestDialog requestDialog = new GameRequestDialog(fromActivity);
+            requestDialog.registerCallback(_fbCallbackManager, new FacebookCallback<GameRequestDialog.Result>() {
+                    public void onSuccess(GameRequestDialog.Result values) {
+                        if (callback == null)
+                            return;
 
-                            JSONObject result = bundleToJson(values);
-                            Error error = null;
-                            if (fbError != null) {
-                                error = new Error(fbError.getLocalizedMessage(), 0);
-                            }
-                            callback.onComplete(result, error);
+                        JSONObject result = new JSONObject();
+                        Error error = null;
+                        try {
+                            result.put("requestId", values.getRequestId());
+                            result.put("recipientsIds", new JSONArray(values.getRequestRecipients()));
 
+                        } catch (JSONException ex) {
+                            error = new Error(ex.getLocalizedMessage(), 0);
                         }
-                    });
-
-                    dialog.show();
+                        callback.onComplete(result, error);
+                    }
+                    public void onCancel() {
+                        callback.onComplete(null, null);
+                    }
+                    public void onError(FacebookException error) {
+                        callback.onComplete(null, new Error(error.getLocalizedMessage(), 0));
+                    }
                 }
-                catch (JSONException e) {
-                    e.printStackTrace();
+            );
+            final GameRequestContent.Builder builder = new GameRequestContent.Builder();
+            if (params.has("message"))
+                builder.setMessage(params.getString("message"));
+            List<String> list = new ArrayList<String>();
+            if (params.get("to") instanceof JSONArray) {
+                JSONArray jArray = params.getJSONArray("to");
+                if (jArray != null) {
+                    for (int i=0;i<jArray.length();i++){
+                        list.add(jArray.get(i).toString());
+                    }
+                }
+
+            } else if (params.get("to") instanceof String) {
+                list.add(params.getString("to"));
+            }
+            if (params.has("to"))
+                builder.setRecipients(list);
+            if (params.has("data"))
+                builder.setData(params.getString("data"));
+            if (params.has("title"))
+                builder.setTitle(params.getString("title"));
+            if (params.has("objectId"))
+                builder.setObjectId(params.getString("objectId"));
+            if (params.has("actionType")) {
+                try {
+                    final GameRequestContent.ActionType actionType = GameRequestContent.ActionType.valueOf(params.getString("actionType").toUpperCase());
+                    builder.setActionType(actionType);
+                } catch (IllegalArgumentException e) {
+                    Log.w(FacebookService.class.getCanonicalName(), "Discarding invalid argument actionType");
+                }
+            }
+            if (params.has("filters")) {
+                try {
+                    final GameRequestContent.Filters filters = GameRequestContent.Filters.valueOf(params.getString("filters"));
+                    builder.setFilters(filters);
+                } catch (IllegalArgumentException e) {
+                    Log.w(FacebookService.class.getCanonicalName(), "Discarding invalid argument filters");
                 }
             }
 
-        });
+            fromActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        requestDialog.show(builder.build());
+
+                    } catch (IllegalArgumentException e) {
+                        callback.onComplete(null, new Error(e.getLocalizedMessage(), 0));
+                    }
+                }
+            });
+
+        } else {
+            fromActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        final WebDialog dialog = new WebDialog(fromActivity, method, jsonToBundle(params), FacebookSdk.getWebDialogTheme(), new WebDialog.OnCompleteListener() {
+                            @Override
+                            public void onComplete(Bundle values, FacebookException fbError) {
+                                if (callback == null) {
+                                    return;
+                                }
+
+                                JSONObject result = bundleToJson(values);
+                                Error error = null;
+                                if (fbError != null) {
+                                    error = new Error(fbError.getLocalizedMessage(), 0);
+                                }
+                                callback.onComplete(result, error);
+
+                            }
+                        });
+
+                        dialog.show();
+
+                    } catch (JSONException e) {
+                        callback.onComplete(null, new Error(e.getLocalizedMessage(), 0));
+                    }
+                }
+            });
+        }
     }
 
     public void showShareDialog(JSONObject params, Activity fromActivity, final CompletionCallback callback) {
