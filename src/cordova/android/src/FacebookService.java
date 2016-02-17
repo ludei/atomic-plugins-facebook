@@ -243,11 +243,11 @@ public class FacebookService  {
                 builder.setData(params.getString("data"));
             if (params.has("title"))
                 builder.setTitle(params.getString("title"));
-            if (params.has("objectId"))
-                builder.setObjectId(params.getString("objectId"));
-            if (params.has("actionType")) {
+            if (params.has("object_id"))
+                builder.setObjectId(params.getString("object_id"));
+            if (params.has("action_type")) {
                 try {
-                    final GameRequestContent.ActionType actionType = GameRequestContent.ActionType.valueOf(params.getString("actionType").toUpperCase());
+                    final GameRequestContent.ActionType actionType = GameRequestContent.ActionType.valueOf(params.getString("action_type").toUpperCase());
                     builder.setActionType(actionType);
                 } catch (IllegalArgumentException e) {
                     Log.w(FacebookService.class.getCanonicalName(), "Discarding invalid argument actionType");

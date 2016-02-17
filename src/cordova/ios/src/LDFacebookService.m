@@ -227,7 +227,7 @@ NSDictionary * fbError(NSError* error)
         _gameRequestDialogCompletion = completion;
         
         FBSDKGameRequestContent *content = [[FBSDKGameRequestContent alloc] init];
-        NSString *actionType = params[@"actionType"];
+        NSString *actionType = params[@"action_type"];
         if (!actionType) {
             NSError * error = [NSError errorWithDomain:@"Facebook" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Cannot show dialog"}];
             completion(fbError(error), error);
@@ -261,7 +261,7 @@ NSDictionary * fbError(NSError* error)
         }
         content.data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         content.message = params[@"message"];
-        content.objectID = params[@"objectId"];
+        content.objectID = params[@"action_type"];
         if ([params[@"to"] isKindOfClass:[NSArray class]])
              content.recipients = params[@"to"];
         else if ([params[@"to"] isKindOfClass:[NSString class]])
