@@ -39,7 +39,7 @@ NSDictionary * fbError(NSError* error)
     if (error) {
         return @{ @"error": @{
                             @"code": [NSNumber numberWithInteger:error.code],
-                            @"message": [error.userInfo objectForKey:@"com.facebook.sdk:FBSDKErrorDeveloperMessageKey"] ?: @""
+                            @"message": [error.userInfo objectForKey:FBSDKErrorDeveloperMessageKey] ?: @""
                           }
                 };
     }
@@ -100,8 +100,9 @@ NSDictionary * fbError(NSError* error)
             ];
 }
 
--(void) initialize
+-(void) initialize:(NSDictionary*) params
 {
+    self.params = params;
     FBSDKAccessToken * session = [FBSDKAccessToken currentAccessToken];
     if (session) {
         [self processSessionChange:session error:nil handler:nil];
@@ -221,54 +222,74 @@ NSDictionary * fbError(NSError* error)
     
 }
 
--(void) ui:(NSString*) methodName params:(NSDictionary*) params completion:(LDFacebookCompletion) completion
-{    
+-(void) ui:(NSString*) methodName params:(NSDictionary*) params fromViewController:(UIViewController*) vc completion:(LDFacebookCompletion) completion
+{
     if ([methodName isEqualToString:@"apprequests"]) {
         _gameRequestDialogCompletion = completion;
         
+        FBSDKGameRequestDialog *dialog = [[FBSDKGameRequestDialog alloc] init];
+        [dialog setDelegate:self];
+        if (![dialog canShow]) {
+            NSError * error = [NSError errorWithDomain:@"Facebook" code:0 userInfo:@{FBSDKErrorDeveloperMessageKey:@"Can't show dialog"}];
+            completion(fbError(error), error);
+            return;
+        }
+        
         FBSDKGameRequestContent *content = [[FBSDKGameRequestContent alloc] init];
         NSString *actionType = params[@"action_type"];
-        if (!actionType) {
-            NSError * error = [NSError errorWithDomain:@"Facebook" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Cannot show dialog"}];
-            completion(fbError(error), error);
-            return;
-        }
-        if ([[actionType lowercaseString] isEqualToString:@"askfor"]) {
-            content.actionType = FBSDKGameRequestActionTypeAskFor;
-        } else if ([[actionType lowercaseString] isEqualToString:@"send"]) {
-            content.actionType = FBSDKGameRequestActionTypeSend;
-        } else if ([[actionType lowercaseString] isEqualToString:@"turn"]) {
-            content.actionType = FBSDKGameRequestActionTypeTurn;
+        if (actionType) {
+            if ([[actionType lowercaseString] isEqualToString:@"askfor"]) {
+                content.actionType = FBSDKGameRequestActionTypeAskFor;
+            } else if ([[actionType lowercaseString] isEqualToString:@"send"]) {
+                content.actionType = FBSDKGameRequestActionTypeSend;
+            } else if ([[actionType lowercaseString] isEqualToString:@"turn"]) {
+                content.actionType = FBSDKGameRequestActionTypeTurn;
+            }
         }
         
-        NSString *filters = params[@"filters"];
-        if (!filters) {
-            content.filters = FBSDKGameRequestFilterNone;
-        } else if ([filters isEqualToString:@"app_users"]) {
-            content.filters = FBSDKGameRequestFilterAppNonUsers;
-        } else if ([filters isEqualToString:@"app_non_users"]) {
-            content.filters = FBSDKGameRequestFilterAppNonUsers;
+        if (params[@"filters"]) {
+            if ([params[@"filters"] isKindOfClass:[NSArray class]]) {
+                content.filters = FBSDKGameRequestFilterNone;
+                
+                NSArray* filters = params[@"filters"];
+                if (filters.count > 0) {
+                    if ([params[@"filters"][0] isEqualToString:@"app_users"]) {
+                        content.filters = FBSDKGameRequestFilterAppUsers;
+                    } else if ([params[@"filters"][0] isEqualToString:@"app_non_users"]) {
+                        content.filters = FBSDKGameRequestFilterAppNonUsers;
+                    }
+                }
+            }
         }
         
-        NSError *error;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params[@"data"]
-                                                           options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
-                                                             error:&error];
-        
-        if (! jsonData) {
-            completion(fbError(error), error);
-            return;
+        if (params[@"data"]) {
+            NSError *error;
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params[@"data"]
+                                                               options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
+                                                                 error:&error];
+            if (! jsonData) {
+                completion(fbError(error), error);
+                return;
+            }
+            content.data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
         }
-        content.data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-        content.message = params[@"message"];
-        content.objectID = params[@"action_type"];
+        
+        if (params[@"message"])
+            content.message = params[@"message"];
+        if (params[@"object_id"])
+            content.objectID = params[@"object_id"];
         if ([params[@"to"] isKindOfClass:[NSArray class]])
-             content.recipients = params[@"to"];
+            content.recipients = params[@"to"];
         else if ([params[@"to"] isKindOfClass:[NSString class]])
-             content.recipients = @[ params[@"to"] ];
-        content.title = params[@"title"];
+            content.recipients = @[ params[@"to"] ];
+        if (params[@"title"])
+            content.title = params[@"title"];
         
-        [FBSDKGameRequestDialog showWithContent:content delegate:self];
+        dialog.content = content;
+        if (self.params[@"frictionlessRequests"] != NULL)
+            [dialog setFrictionlessRequestsEnabled:[self.params[@"frictionlessRequests"] boolValue]];
+        [dialog show];
+        return;
     
     } else {
         _webDialogCompletion = completion;
@@ -302,7 +323,7 @@ NSDictionary * fbError(NSError* error)
     UIImage * image = [UIImage imageWithContentsOfFile:filePath];
     if (!image) {
         if (completion) {
-            NSError * error = [NSError errorWithDomain:@"Facebook" code:0 userInfo:@{NSLocalizedDescriptionKey:@"Can't open image"}];
+            NSError * error = [NSError errorWithDomain:@"Facebook" code:0 userInfo:@{FBSDKErrorDeveloperMessageKey:@"Can't open image"}];
             completion(fbError(error), error);
         }
         return;
@@ -350,7 +371,8 @@ NSDictionary * fbError(NSError* error)
 - (void)gameRequestDialogDidCancel:(FBSDKGameRequestDialog *)gameRequestDialog
 {
     if (_gameRequestDialogCompletion) {
-        _gameRequestDialogCompletion(nil, nil);
+        NSError * error = [NSError errorWithDomain:@"Facebook" code:0 userInfo:@{FBSDKErrorDeveloperMessageKey:@"Canceled by user"}];
+        _gameRequestDialogCompletion(fbError(error), nil);
         _gameRequestDialogCompletion = nil;
     }
 }

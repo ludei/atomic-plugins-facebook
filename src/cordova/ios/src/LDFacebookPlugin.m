@@ -51,7 +51,9 @@ static NSDictionary * sessionToDic(LDFacebookSession * session)
 -(void) initialize:(CDVInvokedUrlCommand*) command
 {
     _service.delegate = self;
-    [_service initialize];
+    NSDictionary * params = [command argumentAtIndex:0 withDefault:@{} andClass:[NSDictionary class]];
+    [_service initialize:params];
+
     
     [self notify:command response:sessionToDic(nil) error:nil keep:NO];
 }
@@ -118,7 +120,7 @@ static NSDictionary * sessionToDic(LDFacebookSession * session)
         return;
     }
     
-    [_service ui:methodName params:params completion:^(NSDictionary *response, NSError *error) {
+    [_service ui:methodName params:params fromViewController:self.viewController completion:^(NSDictionary *response, NSError *error) {
         [self notify:command response:response error:error keep:NO];
     }];
 }

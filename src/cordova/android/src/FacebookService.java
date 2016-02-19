@@ -9,13 +9,24 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.facebook.*;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.internal.WebDialog;
-import com.facebook.login.*;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.*;
+import com.facebook.share.widget.GameRequestDialog;
+import com.facebook.share.widget.ShareDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -45,6 +55,7 @@ public class FacebookService  {
     private ProfileTracker _profileTracker;
     private Runnable _profileChangeTask;
     private ArrayList<SessionCallback> _sessionCallbacks = new ArrayList<SessionCallback>();
+    private JSONObject _params;
 
     public FacebookService(Context ctx) {
         FacebookSdk.sdkInitialize(ctx.getApplicationContext());
@@ -79,8 +90,9 @@ public class FacebookService  {
         _profileTracker.startTracking();
     }
 
-    public void initialize()
+    public void initialize(JSONObject params)
     {
+        this._params = params;
         if (this.isLoggedIn()) {
             this.processSessionChange(AccessToken.getCurrentAccessToken(), null);
         }
@@ -206,8 +218,8 @@ public class FacebookService  {
                         JSONObject result = new JSONObject();
                         Error error = null;
                         try {
-                            result.put("requestId", values.getRequestId());
-                            result.put("recipientsIds", new JSONArray(values.getRequestRecipients()));
+                            result.put("request", values.getRequestId());
+                            result.put("to", new JSONArray(values.getRequestRecipients()));
 
                         } catch (JSONException ex) {
                             error = new Error(ex.getLocalizedMessage(), 0);
@@ -215,7 +227,7 @@ public class FacebookService  {
                         callback.onComplete(result, error);
                     }
                     public void onCancel() {
-                        callback.onComplete(null, null);
+                        callback.onComplete(null, new Error("Canceled by user", 0));
                     }
                     public void onError(FacebookException error) {
                         callback.onComplete(null, new Error(error.getLocalizedMessage(), 0));
@@ -255,7 +267,15 @@ public class FacebookService  {
             }
             if (params.has("filters")) {
                 try {
-                    final GameRequestContent.Filters filters = GameRequestContent.Filters.valueOf(params.getString("filters"));
+                    GameRequestContent.Filters filters = null;
+                    if (params.get("filters") instanceof String) {
+                        filters = GameRequestContent.Filters.valueOf(params.getString("filters"));
+
+                    } else if(params.get("filters") instanceof JSONArray) {
+                        JSONArray set = params.getJSONArray("filters");
+                        if (set.length() > 0)
+                            filters = GameRequestContent.Filters.valueOf(set.getString(0));
+                    }
                     builder.setFilters(filters);
                 } catch (IllegalArgumentException e) {
                     Log.w(FacebookService.class.getCanonicalName(), "Discarding invalid argument filters");
