@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="cocoon-plugin-social-android-facebook" version="1.1.2">
+        id="cocoon-plugin-social-android-facebook" version="1.1.3">
     <name>Cocoon Facebook Plugin Android</name>
     <description>Cocoon Facebook Plugin Android</description>
     <license>MPL 2.0</license>
@@ -33,6 +33,10 @@
         <config-file target="res/values/facebook.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.INTERNET" />
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="application">

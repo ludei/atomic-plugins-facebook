@@ -1,6 +1,6 @@
 {
   "name": "cocoon-plugin-social-android-facebook",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Android Facebook API",
   "cordova": {
     "id": "cocoon-plugin-social-android-facebook",
