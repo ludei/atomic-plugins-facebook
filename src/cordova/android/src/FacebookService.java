@@ -354,7 +354,7 @@ public class FacebookService  {
 
                 @Override
                 public void onCancel() {
-                    callback.onComplete(null, null);
+                    callback.onComplete(null, new Error("Canceled by user", 0));
                 }
 
                 @Override
