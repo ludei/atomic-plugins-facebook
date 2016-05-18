@@ -4,7 +4,6 @@
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <FBSDKShareKit/FBSDKShareKit.h>
 
-
 static LDFacebookSession * fromToken(FBSDKAccessToken * token) {
     LDFacebookSession * result = [[LDFacebookSession alloc] init];
     if (token) {
@@ -80,6 +79,7 @@ NSDictionary * fbError(NSError* error)
 -(id) init {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeProfileNotification:) name:FBSDKProfileDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(openUrl:) name:@"CocoonHandleOpenURLNotification" object:nil];
     }
     return self;
 }
@@ -351,6 +351,14 @@ NSDictionary * fbError(NSError* error)
 
 #pragma mark Internal
 
+- (void)openUrl:(NSNotification *)notification;
+{
+    [[FBSDKApplicationDelegate sharedInstance] application:[notification object][@"application"]
+                                                   openURL:[notification object][@"url"]
+                                         sourceApplication:[notification object][@"sourceApplication"]
+                                                annotation:NULL
+     ];
+}
 
 - (void)gameRequestDialog:(FBSDKGameRequestDialog *)gameRequestDialog didCompleteWithResults:(NSDictionary *)results
 {

@@ -246,6 +246,10 @@ static BOOL ldOpenURLExchanged = NO;
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        // If we are in the developer app we don't swizzle
+        if (NSClassFromString(@"LauncherAppDelegate"))
+            return;
+            
         Class clazz = ClassToSwizzle();
         ldOpenURLExchanged = MethodSwizzle(clazz, @selector(application:openURL:sourceApplication:annotation:), @selector(swizzle_application:openURL:sourceApplication:annotation:));
     });
