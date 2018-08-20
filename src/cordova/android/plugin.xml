@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="cocoon-plugin-social-android-facebook" version="1.1.4">
+        id="cocoon-plugin-social-android-facebook" version="1.1.5">
     <name>Cocoon Facebook Plugin Android</name>
     <description>Cocoon Facebook Plugin Android</description>
     <license>MPL 2.0</license>
@@ -18,16 +18,16 @@
 
         <config-file target="res/xml/config.xml" parent="/*">
             <preference name="android-minSdkVersion" value="15" />
-	    	<feature name="LDFacebookPlugin">
-                <param name="android-package" value="com.ludei.facebook.cordova.FacebookPlugin"/>
+            <feature name="LDFacebookPlugin">
+                <param name="android-package" value="com.ludei.facebook.cordova.FacebookPlugin" />
                 <param name="onload" value="true" />
-	    	</feature>
+            </feature>
             <access origin="https://m.facebook.com" />
             <access origin="https://graph.facebook.com" />
             <access origin="https://api.facebook.com" />
             <access origin="https://*.fbcdn.net" />
             <access origin="https://*.akamaihd.net" />
-    	</config-file>
+        </config-file>
 
         <source-file src="src/facebook.xml" target-dir="res/values" />
         <config-file target="res/values/facebook.xml" parent="/*">
@@ -40,14 +40,14 @@
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="application">
-            <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id"/>
+            <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id" />
             <activity android:label="@string/fb_app_name" android:name="com.facebook.FacebookActivity"
-          android:configChanges=
-                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-          android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
-          <provider android:authorities="com.facebook.app.FacebookContentProvider$APP_ID"
-          android:name="com.facebook.FacebookContentProvider"
-          android:exported="true" />
+                      android:configChanges=
+                              "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+                      android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            <provider android:authorities="com.facebook.app.FacebookContentProvider$APP_ID"
+                      android:name="com.facebook.FacebookContentProvider"
+                      android:exported="true" />
         </config-file>
 
         <js-module src="www/cocoon_facebook.js" name="Facebook">
@@ -55,5 +55,5 @@
         </js-module>
 
     </platform>
-    <dependency id="cocoon-plugin-social-common" />
+    <dependency id="cocoon-plugin-social-common" version="1.0.1" />
 </plugin>
