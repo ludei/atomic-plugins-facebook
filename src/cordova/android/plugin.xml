@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-        id="cocoon-plugin-social-android-facebook" version="1.1.5">
+        id="cocoon-plugin-social-android-facebook" version="2.0.0">
     <name>Cocoon Facebook Plugin Android</name>
     <description>Cocoon Facebook Plugin Android</description>
     <license>MPL 2.0</license>
@@ -16,7 +16,7 @@
 
         <framework src="com.facebook.android:facebook-android-sdk:4.8.1" />
 
-        <config-file target="res/xml/config.xml" parent="/*">
+        <config-file target="app/src/main/res/xml/config.xml" parent="/*">
             <preference name="android-minSdkVersion" value="15" />
             <feature name="LDFacebookPlugin">
                 <param name="android-package" value="com.ludei.facebook.cordova.FacebookPlugin" />
@@ -30,16 +30,16 @@
         </config-file>
 
         <source-file src="src/facebook.xml" target-dir="res/values" />
-        <config-file target="res/values/facebook.xml" parent="/*">
+        <config-file target="app/src/main/res/values/facebook.xml" parent="/*">
             <string name="fb_app_id">$APP_ID</string>
             <string name="fb_app_name">$APP_NAME</string>
         </config-file>
 
-        <config-file target="AndroidManifest.xml" parent="/*">
+        <config-file target="app/src/main/AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.INTERNET" />
         </config-file>
 
-        <config-file target="AndroidManifest.xml" parent="application">
+        <config-file target="app/src/main/AndroidManifest.xml" parent="application">
             <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id" />
             <activity android:label="@string/fb_app_name" android:name="com.facebook.FacebookActivity"
                       android:configChanges=
@@ -55,5 +55,5 @@
         </js-module>
 
     </platform>
-    <dependency id="cocoon-plugin-social-common" version="1.0.1" />
+    <dependency id="cocoon-plugin-social-common" />
 </plugin>
